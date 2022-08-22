@@ -1,78 +1,87 @@
 // globals
-const PAGECONTAINER = document.getElementsByTagName('body')[0]
-const PREFERSDARKTHEME = window.matchMedia('(prefers-color-scheme: dark)')
-const THEMESWITCHER = document.getElementById('theme_switcher')
+// const PAGECONTAINER = document.getElementsByTagName('body')[0]
+// const PREFERSDARKTHEME = window.matchMedia('(prefers-color-scheme: dark)')
+// const THEMESWITCHER = document.getElementById('theme_switcher')
 
 /** Provide a warning when any of the Unicode generators are chosen. */
 function unicodeWarn() {
-  if (localStorage.getItem('unicode_warned') === null) {
-    document.getElementById('overlay').style.display = 'block'
-    localStorage.setItem('unicode_warned', true)
-  }
+  // if (localStorage.getItem('unicode_warned') === null) {
+  //   document.getElementById('overlay').style.display = 'block'
+  //   localStorage.setItem('unicode_warned', true)
+  // }
+  const classes = document.getElementsByClassName('unicode-warn')
+  classes[0].style.visibility = 'visible'
 }
 
-/** Toggle the theme to dark. Uses #000000 for OLED efficiency. */
-function setDarkTheme() {
-  PAGECONTAINER.classList.add('dark-theme')
-  localStorage.setItem('theme', 'dark')
-  // SVG sun
-  THEMESWITCHER.innerHTML = `
-    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='currentColor' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-sun'>
-      <circle cx='12' cy='12' r='5'></circle>
-      <line x1='12' y1='1' x2='12' y2='3'></line>
-      <line x1='12' y1='21' x2='12' y2='23'></line>
-      <line x1='4.22' y1='4.22' x2='5.64' y2='5.64'></line>
-      <line x1='18.36' y1='18.36' x2='19.78' y2='19.78'></line>
-      <line x1='1' y1='12' x2='3' y2='12'></line>
-      <line x1='21' y1='12' x2='23' y2='12'></line>
-      <line x1='4.22' y1='19.78' x2='5.64' y2='18.36'></line>
-      <line x1='18.36' y1='5.64' x2='19.78' y2='4.22'></line>
-    </svg>
-  `
+function unicodeWarnClean() {
+  const classes = document.getElementsByClassName('unicode-warn')
+  classes[0].style.visibility = 'hidden'
 }
 
-/** Toggle the theme to light. */
-function setLightTheme() {
-  PAGECONTAINER.classList.remove('dark-theme')
-  localStorage.setItem('theme', 'light')
-  // SVG moon
-  THEMESWITCHER.innerHTML = `
-    <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='currentColor' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-moon'>
-      <path d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'></path>
-    </svg>
-  `
-}
+// /** Toggle the theme to dark. Uses #000000 for OLED efficiency. */
+// function setDarkTheme() {
+//   PAGECONTAINER.classList.add('dark-theme')
+//   localStorage.setItem('theme', 'dark')
+//   // SVG sun
+//   THEMESWITCHER.innerHTML = `
+//     <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='currentColor' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-sun'>
+//       <circle cx='12' cy='12' r='5'></circle>
+//       <line x1='12' y1='1' x2='12' y2='3'></line>
+//       <line x1='12' y1='21' x2='12' y2='23'></line>
+//       <line x1='4.22' y1='4.22' x2='5.64' y2='5.64'></line>
+//       <line x1='18.36' y1='18.36' x2='19.78' y2='19.78'></line>
+//       <line x1='1' y1='12' x2='3' y2='12'></line>
+//       <line x1='21' y1='12' x2='23' y2='12'></line>
+//       <line x1='4.22' y1='19.78' x2='5.64' y2='18.36'></line>
+//       <line x1='18.36' y1='5.64' x2='19.78' y2='4.22'></line>
+//     </svg>
+//   `
+// }
 
-/** Initialize the theme from previous setting, or default to light. */
-function initTheme() {
-  if (localStorage.getItem('theme') === 'dark') {
-    // Dark Theme was set on page load because of previously set preference.
-    setDarkTheme()
-  } else if (
-    // Dark Theme was set on page load because of OS preference.
-    !localStorage.getItem('theme') &&
-    PREFERSDARKTHEME &&
-    PREFERSDARKTHEME.matches === true
-  ) {
-    setDarkTheme()
-  } else {
-    // Light Theme was assumed due to page default or user preference or OS preference.
-    setLightTheme()
-  }
-}
+// /** Toggle the theme to light. */
+// function setLightTheme() {
+//   PAGECONTAINER.classList.remove('dark-theme')
+//   localStorage.setItem('theme', 'light')
+//   // SVG moon
+//   THEMESWITCHER.innerHTML = `
+//     <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='currentColor' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-moon'>
+//       <path d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'></path>
+//     </svg>
+//   `
+// }
 
-/** Toggle theme between light and dark. */
-function toggleTheme() {
-  if (PAGECONTAINER.classList.contains('dark-theme')) {
-    setLightTheme()
-  } else {
-    setDarkTheme()
-  }
-}
+// /** Initialize the theme from previous setting, or default to light. */
+// function initTheme() {
+//   if (localStorage.getItem('theme') === 'dark') {
+//     // Dark Theme was set on page load because of previously set preference.
+//     setDarkTheme()
+//   } else if (
+//     // Dark Theme was set on page load because of OS preference.
+//     !localStorage.getItem('theme') &&
+//     PREFERSDARKTHEME &&
+//     PREFERSDARKTHEME.matches === true
+//   ) {
+//     setDarkTheme()
+//   } else {
+//     // Light Theme was assumed due to page default or user preference or OS preference.
+//     setLightTheme()
+//   }
+// }
+
+// /** Toggle theme between light and dark. */
+// function toggleTheme() {
+//   if (PAGECONTAINER.classList.contains('dark-theme')) {
+//     setLightTheme()
+//   } else {
+//     setDarkTheme()
+//   }
+// }
 
 /** Return selected entropy (55, 60, 65, 70, 75, or 80). */
 function getEntropy() {
-  return parseInt(document.querySelector("input[name='entropy']:checked").value)
+  // TODO terminar
+  //return parseInt(document.querySelector("input[name='entropy']:checked").value)
+  return parseInt(document.getElementById('minimum-entropy').value)
 }
 
 /**
@@ -119,7 +128,6 @@ function generatePassphrase(source) {
  * Mozilla will not store localStorage key values to disk under the file:// protocol.
  * See https://bugzilla.mozilla.org/show_bug.cgi?id=507361 for more information.
  */
-
 function toggleEntropyVisibility() {
   const classes = document.getElementsByClassName('use-entropy')
 
@@ -127,7 +135,8 @@ function toggleEntropyVisibility() {
     if (JSON.parse(localStorage.entropy).length > 0) {
       for (let i = 0; i < classes.length; i++) {
         classes[i].style.visibility = 'visible'
-        classes[i].children[2].innerText = JSON.parse(localStorage.entropy).length
+        //classes[i].children[2].innerText = JSON.parse(localStorage.entropy).length
+        classes[i].children[1].innerText = JSON.parse(localStorage.entropy).length
       }
     } else {
       for (let i = 0; i < classes.length; i++) {
@@ -348,7 +357,7 @@ function generateDiceware(selection) {
   }
 
   passId.innerText = pass
-  passLength.innerText = pass.length + ' characters.'
+  passLength.innerText = pass.length + ' caracteres.'
 }
 
 /**
@@ -393,7 +402,7 @@ function generateEff(selection) {
   pass = generatePass(len, wordList, true, useEntropy)
   pass = pass.replace(/ /g, '-')
   passId.innerText = pass
-  passLength.innerText = pass.length + ' characters.'
+  passLength.innerText = pass.length + ' caracteres.'
   passEntropy.innerText = Math.floor(len * Math.log2(wordList.length)) + ' bits,'
 }
 
@@ -480,7 +489,7 @@ function generateAlternate(selection) {
   pass = generatePass(len, wordList, true, useEntropy)
   pass = pass.replace(/ /g, '-')
   passId.innerText = pass
-  passLength.innerText = [...pass].length + ' characters.'
+  passLength.innerText = [...pass].length + ' caracteres.'
   passEntropy.innerText = Math.floor(len * Math.log2(wordList.length)) + ' bits,'
 }
 
@@ -534,7 +543,8 @@ function generateColors() {
   }
 
   let pass = generatePass(len, colorKeys, true, useEntropy).split(' ')
-  const chosenTheme = localStorage.theme
+  //const chosenTheme = localStorage.theme
+  const chosenTheme = 'light'
 
   for (let i = 0; i < len; i++) {
     const hex = alternateColors[pass[i]]
@@ -542,16 +552,16 @@ function generateColors() {
     if (chosenTheme === undefined || chosenTheme === 'light') {
       if (isTooLight(hex)) {
         tmp +=
-          "<span class='bold light_contrast' style='color:#" + hex + ";'>" + pass[i] + '</span> '
+          "<span class='colors_bold colors_light_contrast' style='color:#" + hex + ";'>" + pass[i] + '</span> '
       } else {
-        tmp += "<span class='bold' style='color:#" + hex + ";'>" + pass[i] + '</span> '
+        tmp += "<span class='colors_bold' style='color:#" + hex + ";'>" + pass[i] + '</span> '
       }
     } else if (chosenTheme === 'dark') {
       if (isTooDark(hex)) {
         tmp +=
-          "<span class='bold dark_contrast' style='color:#" + hex + ";'>" + pass[i] + '</span> '
+          "<span class='colors_bold colors_dark_contrast' style='color:#" + hex + ";'>" + pass[i] + '</span> '
       } else {
-        tmp += "<span class='bold' style='color:#" + hex + ";'>" + pass[i] + '</span> '
+        tmp += "<span class='colors_bold' style='color:#" + hex + ";'>" + pass[i] + '</span> '
       }
     }
   }
@@ -565,7 +575,7 @@ function generateColors() {
 
   pass = tmp
   const totalLen = pass.length + (len - 1)
-  passLength.innerText = totalLen + ' characters.'
+  passLength.innerText = totalLen + ' caracteres.'
   passEntropy.innerText = Math.floor(len * Math.log2(colorKeys.length)) + ' bits,'
 }
 
@@ -653,9 +663,9 @@ function generateBitcoin(selection) {
 
     pass = words.join('-')
     passId.innerText = pass
-    passLength.innerText = pass.length + ' characters.'
+    passLength.innerText = pass.length + ' caracteres.'
     passEntropy.innerText = requiredEntropy + ' bits,'
-    passCheck.innerText = 'Integrated checksum.'
+    passCheck.innerText = 'Integra un checksum.'
   })
 }
 
@@ -1220,11 +1230,11 @@ function generatePseudowords() {
   const passCheck = document.getElementById('pseudo-check')
 
   passId.innerText = pass
-  passLength.innerText = pass.length + ' characters.'
+  passLength.innerText = pass.length + ' caracteres.'
   passEntropy.innerText = ent + ' bits,'
 
   if (displayCheck) {
-    passCheck.innerText = 'Integrated checksum.'
+    passCheck.innerText = 'Integra un checksum.'
   } else {
     passCheck.innerText = ''
   }
@@ -1240,6 +1250,8 @@ function generateRandom() {
   const passEntropy = document.getElementById('random-entropy')
   const passCheck = document.getElementById('random-check')
   const option = document.getElementById('random-options').value
+
+  unicodeWarnClean()
 
   // ASCII optgroup
   if (option === 'Base94') {
@@ -1333,13 +1345,13 @@ function generateRandom() {
     pass += check[res % 37n]
   }
 
-  passLength.innerText = pass.length + ' characters.'
+  passLength.innerText = pass.length + ' caracteres.'
   passId.removeAttribute('style') // from emoji
   passId.innerText = pass
   passEntropy.innerText = Math.floor(len * Math.log2(s.length)) + ' bits,'
 
   if (displayCheck) {
-    passCheck.innerText = 'Integrated checksum.'
+    passCheck.innerText = 'Integra un checksum.'
   } else {
     passCheck.innerText = ''
   }
@@ -1362,7 +1374,7 @@ function generateEmoji() {
 
   const pass = generatePass(len, randomEmoji, false, useEntropy)
 
-  passLength.innerText = len + ' characters.'
+  passLength.innerText = len + ' caracteres.'
   passId.style.fontFamily = 'Twemoji Mozilla'
   passId.innerText = pass
   passEntropy.innerText = Math.floor(len * Math.log2(randomEmoji.length)) + ' bits,'

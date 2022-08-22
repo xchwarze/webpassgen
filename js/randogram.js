@@ -1,12 +1,13 @@
+window.RANDOGRAM_FLAG = false
 const LENGTH = 400
 
 const CANVAS = document.getElementById('randogram')
 const CTX = CANVAS.getContext('2d', {alpha: false})
 
-const OFFICERRANK = document.getElementById('officerRank')
-const RANKPIPS = document.getElementById('rankPips')
-const NEXTRANK = document.getElementById('nextRank')
-const REMAININGRANKBITS = document.getElementById('remainingRankBits')
+// const OFFICERRANK = document.getElementById('officerRank')
+// const RANKPIPS = document.getElementById('rankPips')
+// const NEXTRANK = document.getElementById('nextRank')
+// const REMAININGRANKBITS = document.getElementById('remainingRankBits')
 const ENTROPYRESULT1 = document.getElementById('entropyResult1')
 const ENTROPYRESULT2 = document.getElementById('entropyResult2')
 
@@ -141,6 +142,10 @@ function genPixels () {
 }
 
 function drawRandogram () {
+  if (!window.RANDOGRAM_FLAG) {
+    return;
+  }
+
   const imgData = CTX.getImageData(0, 0, LENGTH, LENGTH)
   const pixels = genPixels()
 
@@ -173,7 +178,8 @@ function updateEntropyCounts () {
   ENTROPYRESULT2.innerText = items
 }
 
-function getEntropy () {
+function getCanvasEntropy () {
+  console.log('getCanvasEntropy');
   let entropy
   let bits = neumann = []
   let lifetimeBits = parseInt(localStorage.lifetimeBits, 10) || 0
@@ -186,9 +192,10 @@ function getEntropy () {
   }
 
   updateEntropyCounts() // set count initially
-  awardOfficerRank(lifetimeBits)
+  //awardOfficerRank(lifetimeBits)
 
-  document.getElementById('randogram').onpointermove = function (e) {
+  //document.getElementById('randogram').onpointermove = function (e) {
+  CANVAS.onpointermove = function (e) {
     const x = Math.floor(e.offsetX)
     const y = Math.floor(e.offsetY)
 
@@ -216,9 +223,22 @@ function getEntropy () {
     } // if 0 <= x < LENGTH && 0 <= y < LENGTH
 
     updateEntropyCounts() // update counts on mouse movement
-    awardOfficerRank(lifetimeBits)
+    //awardOfficerRank(lifetimeBits)
   } // onpointermove
-  requestAnimationFrame(drawRandogram)
+
+  // ya lo llamo arriba
+  //requestAnimationFrame(drawRandogram)
 } // getEntropy()
 
-getEntropy()
+//getCanvasEntropy()
+
+function startCanvas() {
+  window.RANDOGRAM_FLAG = true
+  getCanvasEntropy()
+}
+
+function stopCanvas() {
+  window.RANDOGRAM_FLAG = false
+  CANVAS.onpointermove = undefined
+  CTX.clearRect(0, 0, CANVAS.width, CANVAS.height);
+}
