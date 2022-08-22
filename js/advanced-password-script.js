@@ -14,11 +14,8 @@
         // from main.js
         toggleEntropyVisibility();
     })
-})(jQuery);
 
-/*
- window.onload = function() {
-    setSecurity()
-    loadPasses()
- }
-*/
+    // yo no hago nada de esto por defecto
+    //setSecurity();
+    //loadPasses();
+})(jQuery);
