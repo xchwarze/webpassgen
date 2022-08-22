@@ -1,8 +1,7 @@
-window.RANDOGRAM_FLAG = false
 const LENGTH = 400
 
 const CANVAS = document.getElementById('randogram')
-const CTX = CANVAS.getContext('2d', {alpha: false})
+const CTX = CANVAS.getContext('2d')
 
 // const OFFICERRANK = document.getElementById('officerRank')
 // const RANKPIPS = document.getElementById('rankPips')
@@ -10,6 +9,10 @@ const CTX = CANVAS.getContext('2d', {alpha: false})
 // const REMAININGRANKBITS = document.getElementById('remainingRankBits')
 const ENTROPYRESULT1 = document.getElementById('entropyResult1')
 const ENTROPYRESULT2 = document.getElementById('entropyResult2')
+
+let ENTROPY = []
+let BITS = []
+let NEUMANN = []
 
 function awardOfficerRank (bits) {
   // Thank you https://feathericons.com/
@@ -53,7 +56,7 @@ function awardOfficerRank (bits) {
   }
 
   /*
-    Rank is awarded exponentially based on the number of bits generated as 2**bits / 16.
+    Rank is awarded exponentially based on the number of bits generated as 2**bits >> 4.
 
     For example:
       - Until you generate less than 64 bits, you are a cadet in the academy.
@@ -87,7 +90,7 @@ function awardOfficerRank (bits) {
   if (bits < 64) {
     rank = rankOrder[0]
   } else {
-    rank = rankOrder[Math.floor(Math.log2(bits / 16)) - 1]
+    rank = rankOrder[Math.floor(Math.log2(bits >> 4)) - 1]
   }
 
   let nextRank = rankOrder[rankOrder.indexOf(rank) + 1]
@@ -95,7 +98,7 @@ function awardOfficerRank (bits) {
   localStorage.rank = rank
   OFFICERRANK.innerText = rank
   NEXTRANK.innerText = nextRank
-  REMAININGRANKBITS.innerText = 16 * 2 ** (rankOrder.indexOf(nextRank) + 1) - localStorage.lifetimeBits
+  REMAININGRANKBITS.innerText = (2 ** (rankOrder.indexOf(nextRank) + 1) << 4) - localStorage.lifetimeBits
 
   // openPip, closedPip
   let pipString = ''
@@ -146,25 +149,61 @@ function drawRandogram () {
     return;
   }
 
-  const imgData = CTX.getImageData(0, 0, LENGTH, LENGTH)
+  //let lifetimeBits = parseInt(localStorage.lifetimeBits, 10) || 0
+  const imgData = CTX.createImageData(LENGTH, LENGTH)
   const pixels = genPixels()
 
-  for (let i = 0; i < imgData.data.length; i += 4) {
-    if (pixels[i / 4] % 2 === 0) {
-      imgData.data[i] = 0
-      imgData.data[i + 1] = 0
-      imgData.data[i + 2] = 0
-    } else {
-      imgData.data[i] = 255
-      imgData.data[i + 1] = 255
-      imgData.data[i + 2] = 255
-    }
+  if (localStorage.hasOwnProperty('entropy')) {
+    ENTROPY = JSON.parse(localStorage.entropy)
   }
+
+  for (let i = 0; i < imgData.data.length; i += 4) {
+    if (pixels[i >> 2] < 128) {
+      imgData.data[i]     = 255 // red
+      imgData.data[i + 1] = 255 // green
+      imgData.data[i + 2] = 255 // blue
+    }
+
+    imgData.data[i + 3] = 255   // alpha
+  }
+
+  updateEntropyCounts() // set count initially
+  //awardOfficerRank(lifetimeBits)
 
   CTX.putImageData(imgData, 0, 0)
   requestAnimationFrame(drawRandogram)
 
-  return pixels
+  //document.getElementById('randogram').onpointermove = function (e) {
+  CANVAS.onpointermove = function (e) {
+    const x = Math.floor(e.offsetX)
+    const y = Math.floor(e.offsetY)
+
+    if (0 <= x && x < LENGTH && 0 <= y && y < LENGTH) {
+      const index = LENGTH * y + x
+
+      NEUMANN.push(pixels[index] & 1)
+
+      // john von neumann randomness extractor
+      if (NEUMANN.length === 2) {
+        if (NEUMANN[0] !== NEUMANN[1]) {
+          BITS.push(NEUMANN[0])
+          //lifetimeBits++
+
+          if (BITS.length === 16) {
+            ENTROPY.push(parseInt(BITS.join(''), 2))
+            BITS = []
+          }
+        }
+
+        NEUMANN = []
+      }
+    } // if 0 <= x < LENGTH && 0 <= y < LENGTH
+
+    localStorage.entropy = JSON.stringify(ENTROPY)
+
+    updateEntropyCounts() // update counts on mouse movement
+    //awardOfficerRank(lifetimeBits)
+  } // onpointermove
 }
 
 function updateEntropyCounts () {
@@ -174,67 +213,13 @@ function updateEntropyCounts () {
     items = JSON.parse(localStorage.entropy).length
   }
 
-  ENTROPYRESULT1.innerText = 16 * items
+  ENTROPYRESULT1.innerText = items << 4
   ENTROPYRESULT2.innerText = items
 }
 
-function getCanvasEntropy () {
-  console.log('getCanvasEntropy');
-  let entropy
-  let bits = neumann = []
-  let lifetimeBits = parseInt(localStorage.lifetimeBits, 10) || 0
-  const pixels = drawRandogram()
-
-  if (localStorage.hasOwnProperty('entropy')) {
-    entropy = JSON.parse(localStorage.entropy)
-  } else {
-    entropy = []
-  }
-
-  updateEntropyCounts() // set count initially
-  //awardOfficerRank(lifetimeBits)
-
-  //document.getElementById('randogram').onpointermove = function (e) {
-  CANVAS.onpointermove = function (e) {
-    const x = Math.floor(e.offsetX)
-    const y = Math.floor(e.offsetY)
-
-    localStorage.entropy = JSON.stringify(entropy)
-
-    if (0 <= x && x < LENGTH && 0 <= y && y < LENGTH) {
-      const p = LENGTH * y + x
-
-      neumann.push(pixels[p] % 2)
-
-      // john von neumann randomness extractor
-      if (neumann.length === 2) {
-        if (neumann[0] !== neumann[1]) {
-          bits.push(neumann[0])
-          lifetimeBits++
-
-          if (bits.length === 16) {
-            entropy.push(parseInt(bits.join(''), 2))
-            bits = []
-          }
-        }
-
-        neumann = []
-      }
-    } // if 0 <= x < LENGTH && 0 <= y < LENGTH
-
-    updateEntropyCounts() // update counts on mouse movement
-    //awardOfficerRank(lifetimeBits)
-  } // onpointermove
-
-  // ya lo llamo arriba
-  //requestAnimationFrame(drawRandogram)
-} // getEntropy()
-
-//getCanvasEntropy()
-
 function startCanvas() {
   window.RANDOGRAM_FLAG = true
-  getCanvasEntropy()
+  drawRandogram()
 }
 
 function stopCanvas() {

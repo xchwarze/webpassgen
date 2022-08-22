@@ -15,3 +15,10 @@
         toggleEntropyVisibility();
     })
 })(jQuery);
+
+/*
+ window.onload = function() {
+    setSecurity()
+    loadPasses()
+ }
+*/
