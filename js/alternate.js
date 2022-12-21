@@ -38,6 +38,9 @@ function generateAlternate(selection) {
     wordList = wordList.concat(effStarTrek)           // 4000 words
     wordList = wordList.concat(effStarWars)           // 4000 words
     wordList = wordList.concat(moneroEN)              // 1626 words
+    if (selection === 'Acronyms') {
+      wordList = wordList.filter(element => /^[a-z]+$/gi.test(element))
+    }
   } else if (selection === 'Common Words Only') {
     wordList = alternatePgp
     wordList = wordList.concat(alternatePokerware)
@@ -92,14 +95,32 @@ function generateAlternate(selection) {
     useEntropy = true
   }
 
-  pass = generatePass(len, wordList, true, useEntropy)
-  pass = pass.replace(/ /g, '-')
-  passId.innerText = pass
-  passEntropy.innerText = Math.floor(len * Math.log2(wordList.length)) + ' bits,'
-  passLength.innerText = [...pass].length + ' caracteres.'
+  if (selection === 'Acronyms') {
+    let counter = 4
+    let results
+
+    do {
+      results = generateAcronym(counter, wordList, useEntropy)
+      counter++
+    } while (results.security < entropy)
+
+    pass = results.passphrase
+    passId.classList.add('acronym')
+    passId.innerHTML = pass
+    passEntropy.innerText = results.security + ' bits,'
+    passLength.innerText = pass.replace(/<\/?span>/g, '').length + ' caracteres'
+  } else {
+    pass = generatePass(len, wordList, true, useEntropy)
+    pass = pass.replace(/ /g, '-')
+    passId.classList.remove('acronym')
+    passId.innerText = pass
+    passEntropy.innerText = Math.floor(len * Math.log2(wordList.length)) + ' bits,'
+    passLength.innerText = [...pass].length + ' caracteres.'
+  }
+
 }
 
-/** Generate a color passphrase */
+/** Generate a passphrase based on an acronym */
 function generateColors() {
   let tmp = ''
   const colorKeys = Object.keys(alternateColors)
